@@ -42,6 +42,25 @@ describe('tap is a TOUCH, not a click with another name', () => {
     expect(pointerType, 'an app that branches on pointerType must see touch').toBe('touch');
   });
 
+  it('puts touch pointer events at the target centre', async () => {
+    const el = mount('<canvas></canvas>');
+    el.getBoundingClientRect = () => new DOMRect(10, 20, 100, 40);
+    const positions: number[][] = [];
+    for (const type of ['pointerdown', 'pointerup']) {
+      el.addEventListener(type, (event) => {
+        const pointer = event as PointerEvent;
+        positions.push([pointer.clientX, pointer.clientY]);
+      });
+    }
+
+    await act(el, ActionType.TAP);
+
+    expect(positions).toEqual([
+      [60, 40],
+      [60, 40],
+    ]);
+  });
+
   it('still delivers the trailing click, because a touch device synthesises one', async () => {
     // An app that only listens for `click` must work under a tap — that IS the thing worth checking.
     const el = mount('<button>Save</button>');

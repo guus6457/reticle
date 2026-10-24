@@ -383,12 +383,15 @@ export async function fireTapSequence(
 }
 
 /** A pointer event that says it came from a FINGER — the discriminator a touch handler reads. */
-function firePointerTouch(el: Element, type: string): void {
+function firePointerTouch(el: ActionTarget, type: string): void {
+  const at = centreOf(el);
   asSyntheticInput(() =>
     el.dispatchEvent(
       pointerEventFor(el, type, {
         bubbles: true,
         cancelable: true,
+        clientX: at.x,
+        clientY: at.y,
         pointerType: 'touch',
         isPrimary: true,
         width: 23,
